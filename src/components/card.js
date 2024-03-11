@@ -10,9 +10,11 @@ export function Repo({ data }) {
     <a href={html_url} className="github-card">
       <h3>{name}</h3>
       <p>{description}</p>
-      <span className="github-card__meta">
-        <span className="github-card__language-icon" style={{ color: lang[language] }}>●</span> {language}
-      </span>
+      {language?(
+        <span className="github-card__meta">
+          <span className="github-card__language-icon" style={{ color: lang[language] }}>●</span> {language}
+        </span>
+      ):(<></>)}
       <div className='flex'>
       <span className="github-card__meta">
         <FaStar  /> {/* Using FaStar icon from react-icons */}

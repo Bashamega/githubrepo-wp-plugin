@@ -34,6 +34,7 @@ $spacing: 10px;
 }
 
 .github-card {
+  border-radius: 15px;
   display: block;
   box-sizing: border-box;
   border: 1px solid $gray;
@@ -44,7 +45,15 @@ $spacing: 10px;
   font-size: 13px;
   flex: 1;
   min-width: 250px;
-  
+  font-family: 'tahoma';
+  transition: transform 0.3s; // Added transition property for smooth hover effect
+
+  &:hover {
+    transform: scale(1.1); // Enlarges the card on hover
+    background-color: #333; // Darkens the background on hover
+	color:white
+  }
+
   > h3 {
     margin-top: 0;
     color: $color-github;
@@ -56,8 +65,9 @@ $spacing: 10px;
   margin-right: $spacing;
   display: flex;
   align-items: center;
+  justify-content: center;
   > i {
     font-size: 16px;
   }
 }
-.flex{display: flex;}
+.flex{display: flex; justify-content: center; align-items: center;}
