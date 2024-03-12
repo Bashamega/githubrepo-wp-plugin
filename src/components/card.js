@@ -1,34 +1,28 @@
 import React from 'react';
-import { FaStar, FaCodeFork } from 'react-icons/fa6'; // Importing react-icons for icons
-
 import lang from '../../assets/color.json';
 
 export function Repo({ data }) {
   const { name, html_url, description, forks, stargazers_count, language } = data;
 
   return (
-    <a href={html_url} className="github-card">
+    <a href={html_url} class="github-card">
       <h3>{name}</h3>
       <p>{description}</p>
-      {language?(
-        <span className="github-card__meta">
-          <span className="github-card__language-icon" style={{ color: lang[language] }}>●</span> {language}
-        </span>
-      ):(<></>)}
-      <div className='flex'>
-      <span className="github-card__meta">
-        <FaStar  /> {/* Using FaStar icon from react-icons */}
-        <span>
+      <span class="github-card__meta">
+        <span class="github-card__language-icon" style={{'color': lang[language]}}>●</span> {language}
+      </span>
+      <span class="github-card__meta">
+        <i class="fa fa-star" aria-hidden="true"></i>
+        <span data-stars>
           {stargazers_count}
         </span>
       </span>
-      <span className="github-card__meta">
-        <FaCodeFork /> {/* Using FaCodeFork icon from react-icons */}
-        <span>
+      <span class="github-card__meta">
+        <i class="fa fa-code-fork" aria-hidden="true"></i>
+        <span data-forks>
           {forks}
         </span>
       </span>
-      </div>
     </a>
   );
 }

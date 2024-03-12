@@ -1,5 +1,4 @@
 import { __ } from '@wordpress/i18n';
-import { useBlockProps } from '@wordpress/block-editor';
 import './editor.scss';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
@@ -11,31 +10,50 @@ import Loader from 'rsuite/Loader';
 import 'rsuite/Loader/styles/index.css';
 import { Error } from './components/error';
 import { Repo } from './components/card';
-export default function Edit() {
+export default function Edit(props) {
 	const [selected, select] = useState('option1');
 	const [option1, setOption1] = useState('');
 	const [option2, setOption2] = useState('');
-	const [option3, setOption3] = useState('');
-	const [option4, setOption4] = useState('');
 	const [userInput, setUserInput] = useState('');
 	const [data, setData] = useState({loading: false, error: false, apiData: null});
-
+	const [submitted, submit] = useState(false);
 	const change = (e, func) => {
 		const value = e.target.value;
 		func(value);
 	};
-
 	useEffect(() => {
+		if(props.attributes.dataFetched){
+			submit(true);
+		}
+	}, []);
+	useEffect(() => {
+		refetch();
+	}, [option1, option2, userInput, selected]);
+	const refetch = () => {
 		switch (selected) {
 			case 'option1':
 				if (option1) {
 					setData({loading: true, error: false});
-					axios.get(`https://api.github.com/users/${option1}/repos`)
+					let apiUrl = '';
+					if(submitted){
+						apiUrl = `https://api.github.com/users/${props.attributes.info.userName}/repos`;
+					}else{
+						apiUrl = `https://api.github.com/users/${option1}/repos`;
+					}
+					axios.get(apiUrl)
 						.then(response => {
 							setData({loading: false, error: false, apiData: response.data});
+							props.setAttributes({dataFetched: {loading: false, error: false, apiData: response.data}});
+							props.setAttributes({apiURL: apiUrl});
+							props.setAttributes({info: {
+								'type': selected,
+								'userName': option1,
+								'org': null,
+								'topic': null
+							}});
 						})
 						.catch(error => {
-							console.log(error)
+							console.log(error);
 							setData({loading: false, error: true});
 						});
 				} else {
@@ -45,101 +63,120 @@ export default function Edit() {
 			case 'option2':
 				if (option2) {
 					setData({loading: true, error: false});
+					let apiUrl = '';
+					if(submitted){
+						apiUrl = `https://api.github.com/orgs/${props.attributes.info.org}/repos`;
+					}else{
+						apiUrl = `https://api.github.com/orgs/${option2}/repos`;
+					}
+					axios.get(apiUrl)
+						.then(response => {
+							setData({loading: false, error: false, apiData: response.data});
+							props.setAttributes({dataFetched: {loading: false, error: false, apiData: response.data}});
+							props.setAttributes({apiURL: apiUrl});
+							props.setAttributes({info: {
+								'type': selected,
+								'userName': null,
+								'org': option2,
+								'topic': null
+							}});
+						})
+						.catch(error => {
+							console.log(error);
+							setData({loading: false, error: true});
+						});
 				} else {
 					setData({loading: false, error: true});
 				}
-				break;
-			case 'option3':
-				if (option3) {
-					setData({loading: true, error: false});
-				} else {
-					setData({loading: false, error: true});
-				}
-				break;
-			case 'option4':
-				if (option4 && userInput) {
-					setData({loading: true, error: false});
-				} else {
-					setData({loading: false, error: true});
-				}
+				
 				break;
 			default:
 				setData({loading: false, error: true});
 				break;
 		}
-	}, [option1, option2, option3, option4, userInput, selected]);
-
+	};
+	const clear = () => {
+		props.setAttributes({dataFetched: null});
+		props.setAttributes({apiURL: null});
+		props.setAttributes({info: {
+			'type': null,
+			'userName': null,
+			'org': null,
+			'topic': null
+		}});
+		submit(false);
+	};
 	return (
-		<div className='gh-repo-plugin' { ...useBlockProps() }>
+		<div className='gh-repo-plugin'>
 			<h2>Github Repo</h2>
-			<Tabs>
-				<TabList>
-					<Tab>Edit</Tab>
-					<Tab>View</Tab>
-				</TabList>
-				<TabPanel>
-					<h4>Edit</h4>
-					<p>How do you want the data to be fetched?</p>
-					<div className='checkboxes'>
-						<label>
-							<input type="radio" value="option1" checked={selected === 'option1'} onChange={() => select('option1')} />
-							All repositories of a specific user
-						</label><br></br>
-						{selected === 'option1' ? (
-							<div>
-								<label>User Name:</label><br></br>
-								<input placeholder='Bashamega' id='1' value={option1} onChange={(e) => change(e, setOption1)}></input>
+			{submitted ? (
+				<section>
+					<nav className='nav'>
+						<button onClick={refetch}>Refetch</button>
+						<button onClick={clear}>Clear</button>
+					</nav>
+					
+					<main>
+						{props.attributes.dataFetched.error && <Error/>}
+						{props.attributes.dataFetched.loading && <Loader backdrop={true}/>}
+						{props.attributes.dataFetched.apiData && props.attributes.dataFetched.apiData.length > 0 ? (
+							<div className='github-cards'>
+								{props.attributes.dataFetched.apiData.map((repo, index) => (
+									<Repo data={repo} key={index}/>
+								))}
 							</div>
+						) : !props.attributes.dataFetched.error ? (
+							<h2>No Public Repositories</h2>
 						) : null}
-						<label><br></br>
-							<input type="radio" value="option2" checked={selected === 'option2'} onChange={() => select('option2')} />
-							All repositories of a specific organization
-						</label><br></br>
-						{selected === 'option2' ? (
-							<div>
-								<label>Github Org Name:</label><br></br>
-								<input placeholder='Github' id='2' value={option2} onChange={(e) => change(e, setOption2)}></input>
-							</div>
-						) : null}
-						<label><br></br>
-							<input type="radio" value="option3" checked={selected === 'option3'} onChange={() => select('option3')} />
-							All repositories under a specific topic
-						</label><br></br>
-						{selected === 'option3' ? (
-							<div>
-								<label>Topic:</label><br></br>
-								<input placeholder='Js' id='3' value={option3} onChange={(e) => change(e, setOption3)}></input>
-							</div>
-						) : null}
-						<label><br></br>
-							<input type="radio" value="option4" checked={selected === 'option4'} onChange={() => select('option4')} />
-							
-							All repositories under a specific topic owned by a specific user/org
-							{selected === 'option4' ? (
+					</main>
+				</section>
+			) : (
+				<Tabs>
+					<TabList>
+						<Tab>Edit</Tab>
+						<Tab>View</Tab>
+					</TabList>
+					<TabPanel>
+						<h4>Edit</h4>
+						<p>How do you want the data to be fetched?</p>
+						<div className='checkboxes'>
+							<label>
+								<input type="radio" value="option1" checked={selected === 'option1'} onChange={() => select('option1')} />
+								All repositories of a specific user
+							</label><br></br>
+							{selected === 'option1' ? (
 								<div>
-									<label>Topic:</label><br></br>
-									<input placeholder='Js' id='4' value={option4} onChange={(e) => change(e, setOption4)}></input><br></br><br></br>
 									<label>User Name:</label><br></br>
-									<input placeholder='Bashamega' id='5' value={userInput} onChange={(e) => setUserInput(e.target.value)}></input>
+									<input placeholder='Bashamega' id='1' value={option1} onChange={(e) => change(e, setOption1)}></input>
 								</div>
 							) : null}
-						</label><br></br>
-					</div>
-				</TabPanel>
-				<TabPanel>
-					{data.error && <Error/>}
-					{data.loading && <Loader backdrop={true}/>}
-					{data.apiData && data.apiData.length > 0 ? (
-						<div className='github-cards'>
-							{data.apiData.map((repo, index) => (
-								<Repo data={repo}/>
-							))}
+							<label><br></br>
+								<input type="radio" value="option2" checked={selected === 'option2'} onChange={() => select('option2')} />
+								All repositories of a specific organization
+							</label><br></br>
+							{selected === 'option2' ? (
+								<div>
+									<label>Github Org Name:</label><br></br>
+									<input placeholder='Github' id='2' value={option2} onChange={(e) => change(e, setOption2)}></input>
+								</div>
+							) : null}
 						</div>
-					) : !data.error? (
-						<h2>No Public Repositories</h2>
-					):(<></>)}
-				</TabPanel>
-			</Tabs>
+					</TabPanel>
+					<TabPanel>
+						{data.error && <Error/>}
+						{data.loading && <Loader backdrop={true}/>}
+						{data.apiData && data.apiData.length > 0 ? (
+							<div className='github-cards'>
+								{data.apiData.map((repo, index) => (
+									<Repo data={repo} key={index}/>
+								))}
+							</div>
+						) : !data.error ? (
+							<h2>No Public Repositories</h2>
+						) : null}
+					</TabPanel>
+				</Tabs>
+			)}
 		</div>
 	);
 }
