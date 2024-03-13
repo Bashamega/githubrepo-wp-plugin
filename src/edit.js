@@ -4,8 +4,7 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Loader from 'rsuite/Loader';
-
+//import { Loader } from 'rsuite';
 // (Optional) Import component styles. If you are using Less, import the `index.less` file. 
 import 'rsuite/Loader/styles/index.css';
 import { Error } from './components/error';
@@ -164,7 +163,6 @@ export default function Edit(props) {
 					</TabPanel>
 					<TabPanel>
 						{data.error && <Error/>}
-						{data.loading && <Loader backdrop={true}/>}
 						{data.apiData && data.apiData.length > 0 ? (
 							<div className='github-cards'>
 								{data.apiData.map((repo, index) => (

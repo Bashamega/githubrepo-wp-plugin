@@ -1,4 +1,3 @@
-import React from 'react';
 import lang from '../../assets/color.json';
 
 export function Repo({ data }) {

@@ -19,6 +19,7 @@
 	"attributes": {
 		"dataFetched": {"type":"object"},
 		"apiURL": {"type":"string"},
-		"info": {"type":"object"}
+		"info": {"type":"object"},
+		"apiData": {"type":"array"}
 	}
 }
