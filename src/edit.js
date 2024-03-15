@@ -19,6 +19,9 @@ export default function Edit(props) {
 	useEffect(() => {
 		submit(props.attributes.dataFetched ? true : false);
 	}, []);
+	useEffect(()=>{
+		refetch()
+	}, [option1, option2])
 	
 	
 
@@ -50,16 +53,17 @@ export default function Edit(props) {
 	const fetchData = async (type, value, apiUrl) => {
 		try {
 			const response = await axios.get(apiUrl);
-			props.setAttributes({ dataFetched: { loading: false, error: false, apiData: response.data } });
-			props.setAttributes({ apiURL: apiUrl });
-			props.setAttributes({
+			props.setAttributes((prevAttributes) => ({
+				...prevAttributes,
+				dataFetched: { loading: false, error: false, apiData: response.data },
+				apiURL: apiUrl,
 				info: {
 					'type': type,
 					'userName': type === 'option1' ? value : null,
 					'org': type === 'option2' ? value : null,
 					'topic': null
 				}
-			});
+			}));
 			return { loading: false, error: false, apiData: response.data };
 		} catch (error) {
 			console.log(error);
@@ -126,13 +130,13 @@ export default function Edit(props) {
 								</div>
 							) : null}
 							<label><br></br>
-								<input type="radio" value="option2" checked={selected === 'option2'} onChange={(e) => setOption2(e.target.value)} />
+								<input type="radio" value="option2" checked={selected === 'option2'} onChange={() => select('option2')} />
 								All repositories of a specific organization
 							</label><br></br>
 							{selected === 'option2' ? (
 								<div>
 									<label>Github Org Name:</label><br></br>
-									<input placeholder='Github' id='2' value={option2} onChange={(e) => change(e, 2)}></input>
+									<input placeholder='Github' id='2' value={option2} onChange={(e) => setOption2(e.target.value)}></input>
 								</div>
 							) : null}
 						</div>
