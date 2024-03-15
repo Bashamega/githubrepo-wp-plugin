@@ -1,8 +1,8 @@
-import { useState } from 'react'; // Import React and useState hook
+import React, { useState } from 'react'; // Import React and useState hook
 import { Repo } from './components/card';
 import { Error } from './components/error';
 //import { Loader } from 'rsuite';
-import 'rsuite/Loader/styles/index.css';
+//import 'rsuite/Loader/styles/index.css';
 
 const Save = (props) => {
 	const [searchTerm, setSearchTerm] = useState(''); // State for search term
