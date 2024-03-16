@@ -14,7 +14,6 @@ Key Features:
 
 2. Repository Display: Use intuitive shortcodes or Gutenberg blocks to embed your GitHub repositories anywhere on your WordPress pages or posts. Choose from various display options such as grid layout or list view.
 
-3. Customization Options: Customize the appearance of your repository display to match your website\'s design. Adjust colors, fonts, and layouts easily to create a cohesive look.
 
 4. Responsive Design: Ensure your GitHub repositories look great on all devices. The plugin\'s responsive design adapts smoothly to different screen sizes, providing a consistent experience for your visitors.
 
