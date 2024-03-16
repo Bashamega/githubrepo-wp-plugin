@@ -5,28 +5,30 @@ import { Error } from './components/error';
 
 const Save = (props) => {
 
-	let filteredRepos = props.attributes.dataFetched.apiData
-
+	let filteredRepos = props.attributes.dataFetched?.apiData || [];
+	let res = ""
 	const searchRepos = (searchTerm) => {
-		return props.attributes.dataFetched.apiData.filter(repo => repo.name.toLowerCase().includes(searchTerm.toLowerCase()));
+		return props.attributes.dataFetched?.apiData ? props.attributes.dataFetched.apiData.filter(repo => repo.name.toLowerCase().includes(searchTerm.toLowerCase())) : [];
 	};
 
 	const handleSearch = (event) => {
-		const searchTerm = event.target.value;
-		filteredRepos = searchRepos(searchTerm)
+		res = event.target.value;
+		filteredRepos = searchRepos(res);
+		
 	};
 
 	return (
 		<main className='gh-repo-plugin' >
-			{props.attributes.dataFetched? (
+			{props.attributes.dataFetched ? (
 				<>
 					{props.attributes.dataFetched.error && <Error/>}
-					{props.attributes.dataFetched.apiData && props.attributes.dataFetched.apiData.length > 0 && filteredRepos.length > 0? (
+					{props.attributes.dataFetched.apiData && props.attributes.dataFetched.apiData.length > 0 && filteredRepos.length > 0 ? (
 						<section>
-							<input placeholder='Search ...' className='gh-repo-search' onInput={handleSearch}></input> 
 							<div className='github-cards'>
 								{filteredRepos.map((repo, index) => (
-									<Repo data={repo} key={index}/>
+									<div class="github-card">
+										<Repo data={repo} key={index} />
+									</div>
 								))}
 							</div>
 						</section>
@@ -35,7 +37,7 @@ const Save = (props) => {
 						<h2>No Public Repositories</h2>
 					) : null}
 				</>
-			):(
+			) : (
 				<Error/>
 			)}
 		</main>

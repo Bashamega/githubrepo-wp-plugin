@@ -28,7 +28,10 @@
 	font-size: 13px;
 	flex: 1;
 	min-width: 250px;
-	
+	>a{
+		color: $text;
+		text-decoration: none;
+	}
 	> h3 {
 	  margin-top: 0;
 	  color: $color-github;

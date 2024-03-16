@@ -4,7 +4,7 @@ export function Repo({ data }) {
   const { name, html_url, description, forks, stargazers_count, language } = data;
 
   return (
-    <a href={html_url} class="github-card">
+    <a href={html_url}>
       <h3>{name}</h3>
       <p>{description}</p>
       <span class="github-card__meta">

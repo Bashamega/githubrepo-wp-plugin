@@ -6,12 +6,13 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Error } from './components/error';
 import { Repo } from './components/card';
+import { TrashIcon } from 'lucide-react';
 
 export default function Edit(props) {
 	const [selected, select] = useState('option1');
 	const [option1, setOption1] = useState('');
 	const [option2, setOption2] = useState('');
-	const [data, setData] = useState({loading: false, error: false, apiData: null});
+	const [data, setData] = useState({loading: false, error: false, apiData: []});
 	const [submitted, submit] = useState(false);
 
 	
@@ -70,7 +71,7 @@ export default function Edit(props) {
 	};
 
 	const clear = () => {
-		props.setAttributes({ dataFetched: null });
+		props.setAttributes({ dataFetched: null});
 		props.setAttributes({ apiURL: null });
 		props.setAttributes({
 			info: {
@@ -81,7 +82,11 @@ export default function Edit(props) {
 		});
 		submit(false);
 	};
-
+	const remove = (index)=>{
+		const newArray = [...data.apiData.slice(0, index), ...data.apiData.slice(index + 1)];
+		setData({ loading: false, error: false, apiData: newArray })
+		props.setAttributes({ dataFetched: { loading: false, error: false, apiData: newArray } });
+	}
 	return (
 		<div className='gh-repo-plugin'>
 			<h2>Github Repo</h2>
@@ -98,7 +103,9 @@ export default function Edit(props) {
 						{props.attributes.dataFetched.apiData && props.attributes.dataFetched.apiData.length > 0 ? (
 							<div className='github-cards'>
 								{props.attributes.dataFetched.apiData.map((repo, index) => (
-									<Repo data={repo} key={index} />
+									<div className='github-card'>
+										<Repo data={repo} key={index} />
+									</div>
 								))}
 							</div>
 						) : !props.attributes.dataFetched.error ? (
@@ -143,7 +150,10 @@ export default function Edit(props) {
 						{data.apiData && data.apiData.length > 0 ? (
 							<div className='github-cards'>
 								{data.apiData.map((repo, index) => (
-									<Repo data={repo} key={index} />
+									<div class="github-card">
+										<TrashIcon onClick={()=>{remove(index)}} className='delete'/>
+										<Repo data={repo} key={index} />
+									</div>
 								))}
 							</div>
 						) : !data.error ? (
