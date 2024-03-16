@@ -53,21 +53,19 @@ export default function Edit(props) {
 	const fetchData = async (type, value, apiUrl) => {
 		try {
 			const response = await axios.get(apiUrl);
-			props.setAttributes((prevAttributes) => ({
-				...prevAttributes,
-				dataFetched: { loading: false, error: false, apiData: response.data },
-				apiURL: apiUrl,
+			props.setAttributes({ dataFetched: { loading: false, error: false, apiData: response.data } });
+			props.setAttributes({ apiURL: apiUrl });
+			props.setAttributes({
 				info: {
 					'type': type,
-					'userName': type === 'option1' ? value : null,
-					'org': type === 'option2' ? value : null,
-					'topic': null
+					'userName': type == 'option1'? value : null,
+					'org': type == 'option2'? value : null
 				}
-			}));
+			});
 			return { loading: false, error: false, apiData: response.data };
 		} catch (error) {
 			console.log(error);
-			return { loading: false, error: true };
+			return { loading: false, error: true, apiData: [] }; // Fix for the Uncaught TypeError
 		}
 	};
 
@@ -78,8 +76,7 @@ export default function Edit(props) {
 			info: {
 				'type': null,
 				'userName': null,
-				'org': null,
-				'topic': null
+				'org': null
 			}
 		});
 		submit(false);
